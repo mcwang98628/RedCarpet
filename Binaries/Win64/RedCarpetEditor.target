@@ -22,18 +22,6 @@
 	},
 	"BuildProducts": [
 		{
-			"Path": "$(ProjectDir)/Binaries/Win64/UnrealEditor-RedCarpet.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(ProjectDir)/Binaries/Win64/UnrealEditor-RedCarpet.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(ProjectDir)/Binaries/Win64/UnrealEditor.modules",
-			"Type": "RequiredResource"
-		},
-		{
 			"Path": "$(EngineDir)/Binaries/Win64/AgentInterface.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -2870,6 +2858,14 @@
 			"Type": "RequiredResource"
 		},
 		{
+			"Path": "$(EngineDir)/Plugins/Marketplace/Cargo/Binaries/Win64/UnrealEditor-Cargo.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Marketplace/Cargo/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
+		},
+		{
 			"Path": "$(EngineDir)/Plugins/Media/AndroidMedia/Binaries/Win64/UnrealEditor-AndroidMediaEditor.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -3616,13 +3612,21 @@
 		{
 			"Path": "$(EngineDir)/Plugins/XGEController/Binaries/Win64/UnrealEditor.modules",
 			"Type": "RequiredResource"
+		},
+		{
+			"Path": "$(ProjectDir)/Binaries/Win64/UnrealEditor-RedCarpet.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Binaries/Win64/UnrealEditor-RedCarpet.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
 		}
 	],
 	"RuntimeDependencies": [
-		{
-			"Path": "$(ProjectDir)/RedCarpet.uproject",
-			"Type": "UFS"
-		},
 		{
 			"Path": "$(EngineDir)/Binaries/ThirdParty/DbgHelp/dbghelp.dll",
 			"Type": "NonUFS"
@@ -26400,6 +26404,10 @@
 			"Type": "UFS"
 		},
 		{
+			"Path": "$(EngineDir)/Plugins/Marketplace/Cargo/Cargo.uplugin",
+			"Type": "UFS"
+		},
+		{
 			"Path": "$(EngineDir)/Plugins/Media/AndroidMedia/AndroidMedia.uplugin",
 			"Type": "UFS"
 		},
@@ -26658,6 +26666,10 @@
 		{
 			"Path": "$(EngineDir)/Plugins/XGEController/XGEController.uplugin",
 			"Type": "UFS"
+		},
+		{
+			"Path": "$(ProjectDir)/RedCarpet.uproject",
+			"Type": "UFS"
 		}
 	],
 	"BuildPlugins": [
@@ -26692,6 +26704,7 @@
 		"CLionSourceCodeAccess",
 		"CableComponent",
 		"CameraShakePreviewer",
+		"Cargo",
 		"ChangelistReview",
 		"ChaosCaching",
 		"ChaosCloth",

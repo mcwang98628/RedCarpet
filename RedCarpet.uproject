@@ -17,6 +17,22 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "VirtualProductionUtilities",
+			"Enabled": true
+		},
+		{
+			"Name": "LiveLink",
+			"Enabled": true
+		},
+		{
+			"Name": "LiveLinkControlRig",
+			"Enabled": true
+		},
+		{
+			"Name": "LiveLinkInputDevice",
+			"Enabled": true
 		}
 	]
 }
