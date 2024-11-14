@@ -35,14 +35,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "MetaHuman",
-			"Enabled": true,
-			"SupportedTargetPlatforms": [
-				"Win64",
-				"Linux"
-			]
-		},
-		{
 			"Name": "AppleARKitFaceSupport",
 			"Enabled": true,
 			"SupportedTargetPlatforms": [
@@ -55,6 +47,10 @@
 		},
 		{
 			"Name": "HairStrands",
+			"Enabled": true
+		},
+		{
+			"Name": "RigLogic",
 			"Enabled": true
 		}
 	]

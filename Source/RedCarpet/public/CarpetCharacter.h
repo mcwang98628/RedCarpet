@@ -35,4 +35,19 @@ public:
 	                         int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	void PickUpItem(ARedCarpetPickable* item);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* HeadMesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* ClothMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* PantsMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* ShoesMesh;
+
+private:
+	void AdjustMaterialTiling(USkeletalMeshComponent* MeshComponent, USkeletalMesh* NewSkeletalMesh);
 };

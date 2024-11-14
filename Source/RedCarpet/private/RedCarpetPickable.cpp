@@ -21,6 +21,11 @@ ARedCarpetPickable::ARedCarpetPickable()
 	UBoxCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);  // Enable collision queries
 	UBoxCollider->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); // Set an appropriate collision channel
 	UBoxCollider->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap); // Respond to overlaps
+	if(ItemMesh == nullptr)
+	{
+		ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	}
+	SetRootComponent(ItemMesh);
 }
 
 // Called when the game starts or when spawned
