@@ -1,0 +1,46 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "AR51SDK",
+	"Description": "",
+	"Category": "Mocap",
+	"CreatedBy": "AR51",
+	"CreatedByURL": "https://ar-51.com",
+	"DocsURL": "https://docs.ar-51.com",
+	"MarketplaceURL": "",
+	"SupportURL": "https://support.ar-51.com",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "AR51SDK",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Android"
+			]
+		},
+		{
+			"Name": "AR51SDKEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ProceduralMeshComponent",
+			"Enabled": true
+		},
+		{
+			"Name": "AnimationWarping",
+			"Enabled": true
+		}
+	]
+}

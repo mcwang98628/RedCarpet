@@ -1,0 +1,2 @@
+#include "IHandsAdapter.h"
+

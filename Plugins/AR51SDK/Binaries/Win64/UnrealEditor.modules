@@ -1,0 +1,8 @@
+{
+	"BuildId": "33043543",
+	"Modules": 
+	{
+		"AR51SDK": "UnrealEditor-AR51SDK.dll",
+		"AR51SDKEditor": "UnrealEditor-AR51SDKEditor.dll"
+	}
+}
