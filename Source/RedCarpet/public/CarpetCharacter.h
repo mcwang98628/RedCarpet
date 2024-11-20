@@ -48,6 +48,32 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* ShoesMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* SunglassesMesh;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<USkeletalMesh*>	ClothMeshList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<USkeletalMesh*>	PantsMeshList;
+
+	UFUNCTION()
+	void ChangeNextCloth();
+	
+	UFUNCTION()
+	void ChangeNextPants();
+
+	UFUNCTION()
+	void ToggleSunglasses();
 private:
 	void AdjustMaterialTiling(USkeletalMeshComponent* MeshComponent, USkeletalMesh* NewSkeletalMesh);
+	int32 curClothIndex = 0;
+
+	int32 curPantsIndex = 0;
+
+	bool IsSunglassesOn = true;
+
+	const FName noseBoneName = FName("SunglassesSocket");
+
+	void AttachSunglasses(USceneComponent* parentComponent);
 };

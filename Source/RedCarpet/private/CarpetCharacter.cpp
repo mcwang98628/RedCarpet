@@ -5,6 +5,7 @@
 
 #include "RedCarpetPickable.h"
 #include "Components/ShapeComponent.h"
+#include "Engine/SkinnedAssetCommon.h"
 
 
 // Sets default values
@@ -44,8 +45,17 @@ void ACarpetCharacter::BeginPlay()
 				ShoesMesh = SkeletalMeshChild;
 				UE_LOG(LogTemp, Log, TEXT("Found Sub Mesh: %s"), *SkeletalMeshChild->GetName());
 			}
+
+			UStaticMeshComponent* SMesh = Cast<UStaticMeshComponent>(Child);
+			if(SMesh && SMesh->GetName() == TEXT("Sunglasses"))
+			{
+				SunglassesMesh = SMesh;
+				UE_LOG(LogTemp, Log, TEXT("Found Sub Mesh: %s"), *SunglassesMesh->GetName());
+				AttachSunglasses(MainMeshComponent);
+			}
 		}
 	}
+	
 	UCharacterCollider->OnComponentBeginOverlap.AddDynamic(this, &ACarpetCharacter::OnShapeOverlapBegin);
 }
 
@@ -71,7 +81,7 @@ void ACarpetCharacter::OnShapeOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 		{
 			// IsInActiveRange = true;
 			// UE_LOG(LogTemp, Display, TEXT("Object In of active range: %s"), *GetName());
-			PickUpItem(item);
+			// PickUpItem(item);
 		}
 	}
 }
@@ -84,6 +94,7 @@ void ACarpetCharacter::PickUpItem(ARedCarpetPickable* item)
 	if (item->ItemType == EItemType::Cloth)
 	{
 		USkeletalMeshComponent* newMesh = item->GetComponentByClass<USkeletalMeshComponent>();
+		// ClothMesh->SetSkeletalMeshAsset(newMesh->GetSkeletalMeshAsset());
 		ClothMesh->SetSkeletalMesh(newMesh->GetSkeletalMeshAsset());
 		for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
 		{
@@ -96,7 +107,9 @@ void ACarpetCharacter::PickUpItem(ARedCarpetPickable* item)
 	}
 	if (item->ItemType == EItemType::Shoes)
 	{
+
 		USkeletalMeshComponent* newMesh = item->GetComponentByClass<USkeletalMeshComponent>();
+		ShoesMesh->SetSkeletalMeshAsset(newMesh->GetSkeletalMeshAsset());
 		for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
 		{
 			if (newMesh->GetMaterials()[i])
@@ -109,7 +122,8 @@ void ACarpetCharacter::PickUpItem(ARedCarpetPickable* item)
 	if (item->ItemType == EItemType::Pants)
 	{
 		USkeletalMeshComponent* newMesh = item->GetComponentByClass<USkeletalMeshComponent>();
-		
+		PantsMesh->SetSkeletalMeshAsset(newMesh->GetSkeletalMeshAsset());
+
 		for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
 		{
 			if (newMesh->GetMaterials()[i])
@@ -121,6 +135,51 @@ void ACarpetCharacter::PickUpItem(ARedCarpetPickable* item)
 	}
 	
 	item->Destroy();
+}
+
+void ACarpetCharacter::ChangeNextCloth()
+{
+	curClothIndex++;
+	curClothIndex = curClothIndex % ClothMeshList.Num();
+	
+	USkeletalMesh* newMesh = ClothMeshList[curClothIndex];
+	ClothMesh->SetSkeletalMesh(newMesh);
+	
+	for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
+	{
+		UMaterialInterface* Material = newMesh->GetMaterials()[i].MaterialInterface;
+		if (Material)
+		{
+			ClothMesh->SetMaterial(i, Material);
+		}
+		
+	}
+	// AdjustMaterialTiling(ClothMesh, newMesh);
+}
+
+void ACarpetCharacter::ChangeNextPants()
+{
+	curPantsIndex++;
+	curPantsIndex = curPantsIndex % PantsMeshList.Num();
+	
+	USkeletalMesh* newMesh = PantsMeshList[curPantsIndex];
+	PantsMesh->SetSkeletalMesh(newMesh);
+	
+	for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
+	{
+		UMaterialInterface* Material = newMesh->GetMaterials()[i].MaterialInterface;
+		if (Material)
+		{
+			PantsMesh->SetMaterial(i, Material);
+		}
+		
+	}
+}
+
+void ACarpetCharacter::ToggleSunglasses()
+{
+	IsSunglassesOn = !IsSunglassesOn;
+	SunglassesMesh->SetVisibility(IsSunglassesOn);
 }
 
 void ACarpetCharacter::AdjustMaterialTiling(USkeletalMeshComponent* MeshComponent, USkeletalMesh* NewSkeletalMesh)
@@ -155,5 +214,10 @@ void ACarpetCharacter::AdjustMaterialTiling(USkeletalMeshComponent* MeshComponen
 			DynamicMaterialInstance->SetScalarParameterValue(FName("TextureScaleV"), ScaleV);
 		}
 	}
+}
+
+void ACarpetCharacter::AttachSunglasses(USceneComponent* parentComponent)
+{
+	SunglassesMesh->AttachToComponent(parentComponent, FAttachmentTransformRules::SnapToTargetIncludingScale,noseBoneName);
 }
 

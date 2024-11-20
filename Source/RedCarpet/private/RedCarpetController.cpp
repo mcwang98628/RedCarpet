@@ -2,6 +2,8 @@
 
 
 #include "RedCarpet/Public/RedCarpetController.h"
+
+#include "CarpetCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -50,6 +52,23 @@ void ARedCarpetController::MoveLR(const FInputActionValue& val)
 	}
 }
 
+void ARedCarpetController::ChangeCloth(const FInputActionValue& val)
+{
+	ACarpetCharacter* curChar = Cast<ACarpetCharacter>(GetCharacter());
+	curChar->ChangeNextCloth();
+}
+
+void ARedCarpetController::ChangePants(const FInputActionValue& val)
+{
+	ACarpetCharacter* curChar = Cast<ACarpetCharacter>(GetCharacter());
+	curChar->ChangeNextPants();
+}
+
+void ARedCarpetController::ToggleSunglasses(const FInputActionValue& val)
+{
+	ACarpetCharacter* curChar = Cast<ACarpetCharacter>(GetCharacter());
+	curChar->ToggleSunglasses();
+}
 
 
 void ARedCarpetController::Tick(float DeltaSeconds)
@@ -62,12 +81,11 @@ void ARedCarpetController::SetupInputComponent()
 	Super::SetupInputComponent();
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		// EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ARedCarpetController::OnInputStarted);
 		EnhancedInputComponent->BindAction(MoveFrontBackAction, ETriggerEvent::Triggered, this, &ARedCarpetController::MoveFB);
 		EnhancedInputComponent->BindAction(MoveLeftRightAction, ETriggerEvent::Triggered, this, &ARedCarpetController::MoveLR);
-
-		// EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ARedCarpetController::OnClickEnd);
-		// EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ARedCarpetController::OnClickEnd);
+		EnhancedInputComponent->BindAction(ChangeClothAction, ETriggerEvent::Triggered, this, &ARedCarpetController::ChangeCloth);
+		EnhancedInputComponent->BindAction(ChangePantsAction, ETriggerEvent::Triggered, this, &ARedCarpetController::ChangePants);
+		EnhancedInputComponent->BindAction(ToggleSunglassesAction, ETriggerEvent::Triggered, this, &ARedCarpetController::ToggleSunglasses);
 	}
 }
 
