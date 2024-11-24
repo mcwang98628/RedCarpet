@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CarpetCharacter.h"
 #include "InputActionValue.h"
 #include "GameFramework/PlayerController.h"
 #include "RedCarpetController.generated.h"
@@ -46,6 +47,11 @@ public:
 	void ChangeCloth(const FInputActionValue& val);
 	void ChangePants(const FInputActionValue& val);
 	void ToggleSunglasses(const FInputActionValue& val);
+
+	TArray<ACarpetCharacter*> ListOfCharacters;
+
+	UFUNCTION(BlueprintCallable)
+	void GetAllCharacters();
 	
 protected:
 	virtual void SetupInputComponent() override;

@@ -3,7 +3,7 @@
 
 #include "RedCarpet/Public/RedCarpetController.h"
 
-#include "CarpetCharacter.h"
+#include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
@@ -54,26 +54,61 @@ void ARedCarpetController::MoveLR(const FInputActionValue& val)
 
 void ARedCarpetController::ChangeCloth(const FInputActionValue& val)
 {
-	ACarpetCharacter* curChar = Cast<ACarpetCharacter>(GetCharacter());
-	curChar->ChangeNextCloth();
+	UE_LOG(LogTemp, Display, TEXT("Q Pressed"));
+	GetAllCharacters();
+	if(!ListOfCharacters.IsEmpty())
+	{
+		for(ACarpetCharacter* curChar: ListOfCharacters)
+		{
+			curChar->ChangeNextCloth();
+		}
+	}
 }
 
 void ARedCarpetController::ChangePants(const FInputActionValue& val)
 {
-	ACarpetCharacter* curChar = Cast<ACarpetCharacter>(GetCharacter());
-	curChar->ChangeNextPants();
+	UE_LOG(LogTemp, Display, TEXT("E Pressed"));
+	GetAllCharacters();
+	if(!ListOfCharacters.IsEmpty())
+	{
+		for(ACarpetCharacter* curChar: ListOfCharacters)
+		{
+			curChar->ChangeNextPants();
+		}
+	}
 }
 
 void ARedCarpetController::ToggleSunglasses(const FInputActionValue& val)
 {
-	ACarpetCharacter* curChar = Cast<ACarpetCharacter>(GetCharacter());
-	curChar->ToggleSunglasses();
+	UE_LOG(LogTemp, Display, TEXT("R Pressed"));
+	GetAllCharacters();
+	if(!ListOfCharacters.IsEmpty())
+	{
+		for(ACarpetCharacter* curChar: ListOfCharacters)
+		{
+			curChar->ToggleSunglasses();
+		}
+	}
 }
 
 
 void ARedCarpetController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+}
+
+void ARedCarpetController::GetAllCharacters()
+{
+	ListOfCharacters.Empty();
+	UWorld* currentWorld = GetWorld();
+	for (TActorIterator<ACarpetCharacter> It(currentWorld->GetWorld()); It; ++It)
+	{
+		ACarpetCharacter* aCharacter = Cast<ACarpetCharacter>(*It);
+		if(aCharacter)
+		{
+			ListOfCharacters.Add(aCharacter);
+		}
+	}
 }
 
 void ARedCarpetController::SetupInputComponent()
