@@ -1,0 +1,8 @@
+{
+	"BuildId": "33043543",
+	"Modules": 
+	{
+		"AR51SDK_LIVELINK": "UnrealEditor-AR51SDK_LIVELINK-Win64-DebugGame.dll",
+		"AR51SDK_LIVELINK_Editor": "UnrealEditor-AR51SDK_LIVELINK_Editor-Win64-DebugGame.dll"
+	}
+}

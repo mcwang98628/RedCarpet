@@ -4,54 +4,111 @@
 #include "RedCarpet/Public/CarpetCharacter.h"
 
 #include "RedCarpetPickable.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Engine/SkinnedAssetCommon.h"
-
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACarpetCharacter::ACarpetCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	UCharacterCollider = GetComponentByClass<UShapeComponent>();
+	if(!UCharacterCollider)
+	{
+		UCharacterCollider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Character Collider"));
+		SetRootComponent(UCharacterCollider);
+	}
+
+
+	if(!ClothMesh)
+	{
+		ClothMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Cloth Mesh"));
+		ClothMesh->SetupAttachment(UCharacterCollider);
+	}
+
+	if(!PantsMesh)
+	{
+		PantsMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pants Mesh"));
+		PantsMesh->SetupAttachment(UCharacterCollider);
+	}
+	if(!ShoesMesh)
+	{
+		ShoesMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Shoes Mesh"));
+		ShoesMesh->SetupAttachment(UCharacterCollider);
+	}
+
+	if(!HandMesh)
+	{
+		HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand Mesh"));
+		HandMesh->SetupAttachment(UCharacterCollider);
+	}
+	if(!HeadMesh)
+	{
+		HeadMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Head Mesh"));
+		HeadMesh->SetupAttachment(HandMesh);
+	}
+	if(!SunglassesMesh)
+	{
+		SunglassesMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Sunglasses Mesh"));
+		SunglassesMesh->SetupAttachment(HeadMesh);
+	}
+	
+	if (!InputComponent)
+	{
+		InputComponent = CreateDefaultSubobject<UInputComponent>(TEXT("Input Component"));
+		// InputComponent->SetupAttachment(UCharacterCollider);
+	}
+	
+	// InputComponent->BindAction("MyKeyAction", IE_Pressed, this, &ACarpetCharacter::HandleKeyPress);
+}
+
+void ACarpetCharacter::SetupInputBindings()
+{
+	if (InputComponent)
+	{
+		InputComponent->BindAction("ChangeClothAction", IE_Pressed, this, &ACarpetCharacter::RandomizeCloth);
+		InputComponent->BindAction("ChangePantsAction", IE_Pressed, this, &ACarpetCharacter::RandomizePants);
+		InputComponent->BindAction("ToggleSunglassesAction", IE_Pressed, this, &ACarpetCharacter::ToggleSunglasses);
+	}
 }
 
 // Called when the game starts or when spawned
 void ACarpetCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	USkeletalMeshComponent* MainMeshComponent = FindComponentByClass<USkeletalMeshComponent>();
-	if (MainMeshComponent)
+	EnableInput(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	// USkeletalMeshComponent* MainMeshComponent = FindComponentByClass<USkeletalMeshComponent>();
+	if (UCharacterCollider)
 	{
 		TArray<USkeletalMeshComponent*> SMComponents;
 		TArray<USceneComponent*> ChildrenSC;
-		MainMeshComponent->GetChildrenComponents(true, ChildrenSC);
+		UCharacterCollider->GetChildrenComponents(true, ChildrenSC);
 		for (USceneComponent* Child : ChildrenSC)
 		{
 			USkeletalMeshComponent* SkeletalMeshChild = Cast<USkeletalMeshComponent>(Child);
-			if (SkeletalMeshChild && SkeletalMeshChild->GetName() == TEXT("Pants"))
+			if (SkeletalMeshChild && SkeletalMeshChild->GetName() == TEXT("Pants Mesh"))
 			{
 				PantsMesh = SkeletalMeshChild;
 				UE_LOG(LogTemp, Log, TEXT("Found Sub Mesh: %s"), *SkeletalMeshChild->GetName());
 			}
-			if (SkeletalMeshChild && SkeletalMeshChild->GetName() == TEXT("Clothes"))
+			if (SkeletalMeshChild && SkeletalMeshChild->GetName() == TEXT("Clothes Mesh"))
 			{
 				ClothMesh = SkeletalMeshChild;
 				UE_LOG(LogTemp, Log, TEXT("Found Sub Mesh: %s"), *SkeletalMeshChild->GetName());
-
+	
 			}
-			if (SkeletalMeshChild && SkeletalMeshChild->GetName() == TEXT("Shoes"))
+			if (SkeletalMeshChild && SkeletalMeshChild->GetName() == TEXT("Shoes Mesh"))
 			{
 				ShoesMesh = SkeletalMeshChild;
 				UE_LOG(LogTemp, Log, TEXT("Found Sub Mesh: %s"), *SkeletalMeshChild->GetName());
 			}
-
+	
 			UStaticMeshComponent* SMesh = Cast<UStaticMeshComponent>(Child);
-			if(SMesh && SMesh->GetName() == TEXT("Sunglasses"))
+			if(SMesh && SMesh->GetName() == TEXT("Sunglasses Mesh"))
 			{
 				SunglassesMesh = SMesh;
 				UE_LOG(LogTemp, Log, TEXT("Found Sub Mesh: %s"), *SunglassesMesh->GetName());
-				AttachSunglasses(MainMeshComponent);
 			}
 		}
 	}
@@ -63,12 +120,6 @@ void ACarpetCharacter::BeginPlay()
 void ACarpetCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void ACarpetCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 void ACarpetCharacter::OnShapeOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -137,10 +188,20 @@ void ACarpetCharacter::PickUpItem(ARedCarpetPickable* item)
 	item->Destroy();
 }
 
-void ACarpetCharacter::ChangeNextCloth()
+void ACarpetCharacter::RandomizeCloth()
 {
-	curClothIndex++;
-	curClothIndex = curClothIndex % ClothMeshList.Num();
+	if(ClothMeshList.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Clothes List Empty"));
+		return;
+	}
+	int32 ranNumInRange = 0;
+	while(ranNumInRange == curClothIndex)
+	{
+		ranNumInRange = FMath::RandRange(0, ClothMeshList.Num()) % ClothMeshList.Num();
+	}
+	
+	curClothIndex = ranNumInRange;
 	
 	USkeletalMesh* newMesh = ClothMeshList[curClothIndex];
 	ClothMesh->SetSkeletalMesh(newMesh);
@@ -157,10 +218,19 @@ void ACarpetCharacter::ChangeNextCloth()
 	// AdjustMaterialTiling(ClothMesh, newMesh);
 }
 
-void ACarpetCharacter::ChangeNextPants()
+void ACarpetCharacter::RandomizePants()
 {
-	curPantsIndex++;
-	curPantsIndex = curPantsIndex % PantsMeshList.Num();
+	if(PantsMeshList.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Pants List Empty"));
+		return;
+	}
+	int32 ranNumInRange = 0;
+	while(ranNumInRange == curPantsIndex)
+	{
+		ranNumInRange = FMath::RandRange(0, PantsMeshList.Num()) % PantsMeshList.Num();
+	}
+	curPantsIndex = ranNumInRange;
 	
 	USkeletalMesh* newMesh = PantsMeshList[curPantsIndex];
 	PantsMesh->SetSkeletalMesh(newMesh);
@@ -180,6 +250,12 @@ void ACarpetCharacter::ToggleSunglasses()
 {
 	IsSunglassesOn = !IsSunglassesOn;
 	SunglassesMesh->SetVisibility(IsSunglassesOn);
+}
+
+void ACarpetCharacter::AttachStaticMeshToSocket(UMeshComponent* s_mesh, USceneComponent* parentComp, FName SocketName)
+{
+	s_mesh->AttachToComponent(parentComp, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
+	
 }
 
 void ACarpetCharacter::AdjustMaterialTiling(USkeletalMeshComponent* MeshComponent, USkeletalMesh* NewSkeletalMesh)
@@ -215,9 +291,3 @@ void ACarpetCharacter::AdjustMaterialTiling(USkeletalMeshComponent* MeshComponen
 		}
 	}
 }
-
-void ACarpetCharacter::AttachSunglasses(USceneComponent* parentComponent)
-{
-	SunglassesMesh->AttachToComponent(parentComponent, FAttachmentTransformRules::SnapToTargetIncludingScale,noseBoneName);
-}
-

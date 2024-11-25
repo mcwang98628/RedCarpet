@@ -19,78 +19,12 @@ void ARedCarpetController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ControlledPawn = GetPawn();
-
-	if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-	{
-		Subsystem -> AddMappingContext(DefaultMappingContext, 0);
-	}
+	// ControlledPawn = GetPawn();
+	
 	// AToneCameraManager* cameraManager = Cast<AToneCameraManager>(PlayerCameraManager);
 	// AToneCamera* mainCam = cameraManager->GetMainCameraActor();
 	// cameraManager->SetMainCamera(mainCam, );
 }
-
-void ARedCarpetController::MoveFB(const FInputActionValue& val)
-{
-	FVector2D MovementInput = val.Get<FVector2D>();
-	if (ControlledPawn)
-	{
-		// Calculate forward movement direction
-		FVector ForwardDirection = ControlledPawn->GetActorRightVector();
-		ControlledPawn->AddMovementInput(ForwardDirection, MovementInput.X);
-	}
-}
-
-void ARedCarpetController::MoveLR(const FInputActionValue& val)
-{
-	FVector2D MovementInput = val.Get<FVector2D>();
-	if (ControlledPawn)
-	{
-		// Calculate right movement direction
-		FVector RightDirection = ControlledPawn->GetActorForwardVector();
-		ControlledPawn->AddMovementInput(RightDirection, MovementInput.X);
-	}
-}
-
-void ARedCarpetController::ChangeCloth(const FInputActionValue& val)
-{
-	UE_LOG(LogTemp, Display, TEXT("Q Pressed"));
-	GetAllCharacters();
-	if(!ListOfCharacters.IsEmpty())
-	{
-		for(ACarpetCharacter* curChar: ListOfCharacters)
-		{
-			curChar->ChangeNextCloth();
-		}
-	}
-}
-
-void ARedCarpetController::ChangePants(const FInputActionValue& val)
-{
-	UE_LOG(LogTemp, Display, TEXT("E Pressed"));
-	GetAllCharacters();
-	if(!ListOfCharacters.IsEmpty())
-	{
-		for(ACarpetCharacter* curChar: ListOfCharacters)
-		{
-			curChar->ChangeNextPants();
-		}
-	}
-}
-
-void ARedCarpetController::ToggleSunglasses(const FInputActionValue& val)
-{
-	UE_LOG(LogTemp, Display, TEXT("R Pressed"));
-	GetAllCharacters();
-	if(!ListOfCharacters.IsEmpty())
-	{
-		for(ACarpetCharacter* curChar: ListOfCharacters)
-		{
-			curChar->ToggleSunglasses();
-		}
-	}
-}
-
 
 void ARedCarpetController::Tick(float DeltaSeconds)
 {
@@ -110,18 +44,3 @@ void ARedCarpetController::GetAllCharacters()
 		}
 	}
 }
-
-void ARedCarpetController::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
-	{
-		EnhancedInputComponent->BindAction(MoveFrontBackAction, ETriggerEvent::Triggered, this, &ARedCarpetController::MoveFB);
-		EnhancedInputComponent->BindAction(MoveLeftRightAction, ETriggerEvent::Triggered, this, &ARedCarpetController::MoveLR);
-		EnhancedInputComponent->BindAction(ChangeClothAction, ETriggerEvent::Triggered, this, &ARedCarpetController::ChangeCloth);
-		EnhancedInputComponent->BindAction(ChangePantsAction, ETriggerEvent::Triggered, this, &ARedCarpetController::ChangePants);
-		EnhancedInputComponent->BindAction(ToggleSunglassesAction, ETriggerEvent::Triggered, this, &ARedCarpetController::ToggleSunglasses);
-	}
-}
-
-

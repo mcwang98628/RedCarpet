@@ -24,6 +24,14 @@ public:
 	// Sets default values for this actor's properties
 	ARedCarpetPickable();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AActor> Bullet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ShootTimeInterval;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool IsShooting = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,13 +40,19 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void Shoot(FName SpawnSocketName);
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	USkeletalMeshComponent* ItemMesh;
+	
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 	UShapeComponent* UBoxCollider;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EItemType ItemType;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	USkeletalMeshComponent* ItemMesh;
+
+private:
+	float startTime = 0;
+	float endTime = 0;
 };

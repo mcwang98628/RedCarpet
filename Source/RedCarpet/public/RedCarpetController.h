@@ -20,42 +20,14 @@ class REDCARPET_API ARedCarpetController : public APlayerController
 public:
 	ARedCarpetController();
 
-	APawn* ControlledPawn;
-
 	virtual void Tick(float DeltaSeconds) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* MoveFrontBackAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* MoveLeftRightAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* ChangeClothAction;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* ChangePantsAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	class UInputAction* ToggleSunglassesAction;
-
-	void MoveFB(const FInputActionValue& val);
-	void MoveLR(const FInputActionValue& val);
-	void ChangeCloth(const FInputActionValue& val);
-	void ChangePants(const FInputActionValue& val);
-	void ToggleSunglasses(const FInputActionValue& val);
-
 	TArray<ACarpetCharacter*> ListOfCharacters;
 
 	UFUNCTION(BlueprintCallable)
 	void GetAllCharacters();
 	
 protected:
-	virtual void SetupInputComponent() override;
-
 	virtual void BeginPlay() override;
 
 };

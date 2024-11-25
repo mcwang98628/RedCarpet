@@ -4,17 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "RedCarpetPickable.h"
+#include "Components/InputComponent.h"
 #include "GameFramework/Character.h"
 #include "CarpetCharacter.generated.h"
 
 UCLASS()
-class REDCARPET_API ACarpetCharacter : public ACharacter
+class REDCARPET_API ACarpetCharacter : public AActor
 {
 	GENERATED_BODY()
 
 public:
+	
 	// Sets default values for this character's properties
 	ACarpetCharacter();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetupInputBindings();
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,13 +27,10 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UShapeComponent* UCharacterCollider;
+	UCapsuleComponent* UCharacterCollider;
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION()
 	void OnShapeOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -36,19 +38,22 @@ public:
 
 	void PickUpItem(ARedCarpetPickable* item);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* HeadMesh;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* ClothMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* PantsMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* ShoesMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* HandMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* SunglassesMesh;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -57,15 +62,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<USkeletalMesh*>	PantsMeshList;
 
-	UFUNCTION()
-	void ChangeNextCloth();
+	UFUNCTION(BlueprintCallable)
+	void RandomizeCloth();
 	
-	UFUNCTION()
-	void ChangeNextPants();
+	UFUNCTION(BlueprintCallable)
+	void RandomizePants();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ToggleSunglasses();
+
+	UFUNCTION(BlueprintCallable)
+	void AttachStaticMeshToSocket(UMeshComponent* s_mesh, USceneComponent* parentComp, FName SocketName);
 private:
+	
 	void AdjustMaterialTiling(USkeletalMeshComponent* MeshComponent, USkeletalMesh* NewSkeletalMesh);
 	int32 curClothIndex = 0;
 
@@ -73,7 +82,5 @@ private:
 
 	bool IsSunglassesOn = true;
 
-	const FName noseBoneName = FName("SunglassesSocket");
-
-	void AttachSunglasses(USceneComponent* parentComponent);
+	// const FName noseBoneName = FName("SunglassesSocket");
 };
