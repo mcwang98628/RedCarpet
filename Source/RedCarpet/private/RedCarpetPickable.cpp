@@ -44,7 +44,7 @@ void ARedCarpetPickable::BeginPlay()
 void ARedCarpetPickable::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(IsShooting)
+	if(IsPickedUp)
 	{
 		endTime += DeltaTime;
 		if(endTime - startTime >= ShootTimeInterval)

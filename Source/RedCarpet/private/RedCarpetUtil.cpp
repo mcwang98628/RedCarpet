@@ -18,3 +18,14 @@ ACameraActor* URedCarpetUtil::FindCameraInWorld(UWorld* WorldContextObject)
 	}
 	return nullptr;
 }
+
+FTransform URedCarpetUtil::GenerateRandomTransform(FVector center, float length, float width, float spawnHeight)
+{
+	FTransform retTransform;
+
+	float randX = FMath::RandRange((center.X - length / 2), (center.X + length / 2));
+	float randY = FMath::RandRange((center.Y - width / 2), (center.Y + width / 2));
+	retTransform.SetLocation(FVector(randX, randY, spawnHeight));
+	retTransform.SetRotation(FQuat(FRotator::ZeroRotator));
+	return retTransform;
+}

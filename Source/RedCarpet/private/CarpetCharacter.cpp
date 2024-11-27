@@ -3,6 +3,7 @@
 
 #include "RedCarpet/Public/CarpetCharacter.h"
 
+#include "EngineUtils.h"
 #include "RedCarpetPickable.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ShapeComponent.h"
@@ -137,57 +138,6 @@ void ACarpetCharacter::OnShapeOverlapBegin(UPrimitiveComponent* OverlappedComp, 
 	}
 }
 
-void ACarpetCharacter::PickUpItem(ARedCarpetPickable* item)
-{
-
-	UE_LOG(LogTemp, Display, TEXT("Picked up object: %s"), *item->GetName());
-
-	if (item->ItemType == EItemType::Cloth)
-	{
-		USkeletalMeshComponent* newMesh = item->GetComponentByClass<USkeletalMeshComponent>();
-		// ClothMesh->SetSkeletalMeshAsset(newMesh->GetSkeletalMeshAsset());
-		ClothMesh->SetSkeletalMesh(newMesh->GetSkeletalMeshAsset());
-		for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
-		{
-			if (newMesh->GetMaterials()[i])
-			{
-				ClothMesh->SetMaterial(i, newMesh->GetMaterials()[i]);
-			}
-		}
-		AdjustMaterialTiling(ClothMesh, newMesh->GetSkeletalMeshAsset());
-	}
-	if (item->ItemType == EItemType::Shoes)
-	{
-
-		USkeletalMeshComponent* newMesh = item->GetComponentByClass<USkeletalMeshComponent>();
-		ShoesMesh->SetSkeletalMeshAsset(newMesh->GetSkeletalMeshAsset());
-		for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
-		{
-			if (newMesh->GetMaterials()[i])
-			{
-				ShoesMesh->SetMaterial(i, newMesh->GetMaterials()[i]);
-			}
-		}
-		AdjustMaterialTiling(ShoesMesh, newMesh->GetSkeletalMeshAsset());
-	}
-	if (item->ItemType == EItemType::Pants)
-	{
-		USkeletalMeshComponent* newMesh = item->GetComponentByClass<USkeletalMeshComponent>();
-		PantsMesh->SetSkeletalMeshAsset(newMesh->GetSkeletalMeshAsset());
-
-		for (int32 i = 0; i < newMesh->GetMaterials().Num(); ++i)
-		{
-			if (newMesh->GetMaterials()[i])
-			{
-				PantsMesh->SetMaterial(i, newMesh->GetMaterials()[i]);
-			}
-		}
-		AdjustMaterialTiling(PantsMesh, newMesh->GetSkeletalMeshAsset());
-	}
-	
-	item->Destroy();
-}
-
 void ACarpetCharacter::RandomizeCloth()
 {
 	if(ClothMeshList.IsEmpty())
@@ -252,10 +202,82 @@ void ACarpetCharacter::ToggleSunglasses()
 	SunglassesMesh->SetVisibility(IsSunglassesOn);
 }
 
+void ACarpetCharacter::GenerateRandomGun(FTransform spawnTransform)
+{
+	if(GunMeshList.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Gun List Empty"));
+		return;
+	}
+	int32 ranNumInRange = FMath::RandRange(0, GunMeshList.Num()) % GunMeshList.Num();
+	TSubclassOf<ARedCarpetPickable> SelectedClass = GunMeshList[ranNumInRange];
+
+	if(SelectedClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ACarpetCharacter::GenerateRandomGun: No class generated"))
+		return;
+	}
+	UWorld* curWorld= GetWorld();
+	if(curWorld)
+	{
+		ARedCarpetPickable* GunActor = curWorld->SpawnActor<ARedCarpetPickable>(SelectedClass, spawnTransform);
+	}
+}
+
 void ACarpetCharacter::AttachStaticMeshToSocket(UMeshComponent* s_mesh, USceneComponent* parentComp, FName SocketName)
 {
 	s_mesh->AttachToComponent(parentComp, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
-	
+}
+
+ARedCarpetPickable* ACarpetCharacter::FindUnusedGun()
+{
+	ARedCarpetPickable* UnusedGun = nullptr;
+	for(TActorIterator<ARedCarpetPickable> It(GetWorld()); It; ++It)
+	{
+		ARedCarpetPickable* gun = Cast<ARedCarpetPickable>(*It);
+		if(gun && !gun->IsPickedUp)
+		{
+			UnusedGun = gun; 
+		} 
+	}
+	return UnusedGun;
+}
+
+bool ACarpetCharacter::HasAttachedGun()
+{
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors); // Get all attached actors
+
+	if (AttachedActors.Num() > 0)
+	{
+		for (AActor* AttachedActor : AttachedActors)
+		{
+			ARedCarpetPickable* foundGun = Cast<ARedCarpetPickable>(AttachedActor);
+			if(foundGun)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void ACarpetCharacter::DestroyAttachedGun()
+{
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors); // Get all attached actors
+
+	if (AttachedActors.Num() > 0)
+	{
+		for (AActor* AttachedActor : AttachedActors)
+		{
+			ARedCarpetPickable* foundGun = Cast<ARedCarpetPickable>(AttachedActor);
+			if(foundGun)
+			{
+				foundGun->Destroy();
+			}
+		}
+	}
 }
 
 void ACarpetCharacter::AdjustMaterialTiling(USkeletalMeshComponent* MeshComponent, USkeletalMesh* NewSkeletalMesh)

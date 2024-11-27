@@ -18,5 +18,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "RedCarpetUtil | Camera", meta = (WorldContext="WorldContextObject"))
 	static ACameraActor* FindCameraInWorld(UWorld* WorldContextObject);
-	
+
+	UFUNCTION(BlueprintCallable, Category = "RedCarpetUtil | Transform")
+	static FTransform GenerateRandomTransform(FVector center, float length, float width, float spawnHeight);
 };

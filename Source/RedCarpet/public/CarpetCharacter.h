@@ -36,8 +36,6 @@ public:
 	void OnShapeOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                         int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void PickUpItem(ARedCarpetPickable* item);
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USkeletalMeshComponent* HeadMesh;
 	
@@ -62,6 +60,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<USkeletalMesh*>	PantsMeshList;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<ARedCarpetPickable>>	GunMeshList;
+	
 	UFUNCTION(BlueprintCallable)
 	void RandomizeCloth();
 	
@@ -72,7 +73,19 @@ public:
 	void ToggleSunglasses();
 
 	UFUNCTION(BlueprintCallable)
+	void GenerateRandomGun(FTransform spawnTransform);
+	
+	UFUNCTION(BlueprintCallable)
 	void AttachStaticMeshToSocket(UMeshComponent* s_mesh, USceneComponent* parentComp, FName SocketName);
+
+	UFUNCTION(BlueprintCallable)
+	ARedCarpetPickable* FindUnusedGun();
+
+	UFUNCTION(BlueprintCallable)
+	bool HasAttachedGun();
+
+	UFUNCTION(BlueprintCallable)
+	void DestroyAttachedGun();
 private:
 	
 	void AdjustMaterialTiling(USkeletalMeshComponent* MeshComponent, USkeletalMesh* NewSkeletalMesh);

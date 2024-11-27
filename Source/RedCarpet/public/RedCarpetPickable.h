@@ -9,10 +9,6 @@
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {
-	Cloth UMETA(DisplayName = "Cloth"),
-	Head UMETA(DisplayName = "Head"),
-	Pants UMETA(DisplayName = "Pants"),
-	Shoes UMETA(DisplayName = "Shoes"),
 	Weapon UMETA(DisplayName = "Weapon"),
 };
 UCLASS()
@@ -31,7 +27,7 @@ public:
 	float ShootTimeInterval;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsShooting = false;
+	bool IsPickedUp = false;
 
 protected:
 	// Called when the game starts or when spawned
